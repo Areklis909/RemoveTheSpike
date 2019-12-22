@@ -46,7 +46,7 @@ class VariadicKalmanFilter
 public:
 	VariadicKalmanFilter(const int r, const int maxLengthOfAlarm, const arma::vec & wsp, const int miTmp, std::shared_ptr<double[]> frms);
 	~VariadicKalmanFilter(void);
-	void fixDamagedSamples(const int t);
+	int fixDamagedSamples(const int t);
 };
 
 }

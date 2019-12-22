@@ -2,6 +2,7 @@
 #define DISTURBANCE_CPP
 
 #include "../include/DisturbanceElimination.hpp"
+#include <functional>
 
 namespace NsDisturbanceElimination {
 
@@ -16,30 +17,33 @@ std::shared_ptr<double[]> DisturbanceElimination::getSamplesToProcess(const std:
     return fileHandler.getSignalHandler(configuration.N);
 }
 
-void DisturbanceElimination::warmUp(std::shared_ptr<double[]> samples, NsSignalparameters::SignalParameters & signalParameters) {
-    
-    using NsSignalparameters::SignalParameters;
-    
-    const int warmUpRequired = configuration.r * 2;
-    const int warmUpLength = (configuration.N > warmUpRequired) ? warmUpRequired : configuration.N/2;
-    for(int t = 0; t < warmUpLength; ++t) {
-        signalParameters.computeEwlsAndVariance(t);
-    }
-}
-
 void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
+
     using NsSignalparameters::SignalParameters;
     using NsVariadicKalmanFilter::VariadicKalmanFilter;
+    using NsCounter::Counter;
 
     SignalParameters signalParameters(samples, configuration.r, configuration.N, configuration.ro, configuration.lambda, configuration.mi);
-
-    warmUp(samples, signalParameters);
-
-    for(int t = 0; t < configuration.N; ++t) {
+    const int startPointOfProcessing = 0;
+    bool relaxAfterAlarm = false;
+    auto counterCallback =  [&relaxAfterAlarm](){
+        relaxAfterAlarm = false;
+    };
+    auto counter = std::make_unique<Counter<decltype(counterCallback)> >(configuration.r, counterCallback);
+    /*
+        Train the AR model for the first r samples
+    */
+    counter->enable();
+    for(int t = startPointOfProcessing; t < configuration.N; ++t) {
         signalParameters.computeEwlsAndVariance(t);
-        if(signalParameters.isAlarm()) {
+        counter->tick();
+        if(signalParameters.isAlarm() == true && relaxAfterAlarm == false) {
             VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(), configuration.mi, samples);
-            kalman.fixDamagedSamples(t);
+            int alarmLength = kalman.fixDamagedSamples(t);
+            if(alarmLength >= configuration.maxAlarmLength) {
+                relaxAfterAlarm = true;
+                counter->enable();
+            }
         }
     }
 }

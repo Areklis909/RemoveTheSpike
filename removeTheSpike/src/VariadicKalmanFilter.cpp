@@ -116,11 +116,13 @@ void VariadicKalmanFilter::pasteTheResult(const AlarmDescriptor & alarm) {
 	memcpy(frames.get() + alarm.startSample, result.memptr(), alarm.length * sizeof(double));
 }
 
-void VariadicKalmanFilter::fixDamagedSamples(const int t) {
+int VariadicKalmanFilter::fixDamagedSamples(const int t) {
 	auto length = getAlarmLength(t);
 	AlarmDescriptor descriptor(t, length);
 	interpolate(descriptor);
 	pasteTheResult(descriptor);
+
+	return length;
 }
 
 }

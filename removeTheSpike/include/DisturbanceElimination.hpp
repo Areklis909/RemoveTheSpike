@@ -4,6 +4,7 @@
 #include "SignalParameters.hpp"
 #include "VariadicKalmanFilter.hpp"
 #include "FileHandler.hpp"
+#include "utils/Counter.hpp"
 
 namespace NsDisturbanceElimination {
 
@@ -33,7 +34,6 @@ private:
 
     void initializeConfiguration(); // confiuguration file parsing to do
     std::shared_ptr<double[]> getSamplesToProcess(const std::string & filename);
-    void warmUp(std::shared_ptr<double[]> samples, NsSignalparameters::SignalParameters & signalParameters);
     void processSamples(std::shared_ptr<double[]> samples);
     void saveSamples(std::shared_ptr<double[]> samples);
 
