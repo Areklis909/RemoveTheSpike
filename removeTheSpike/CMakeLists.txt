@@ -27,6 +27,7 @@ set(SOURCES src/Source.cpp
     src/VariadicKalmanFilter.cpp
     src/ModelStability.cpp
     src/DisturbanceElimination.cpp
+    src/ConfigProcessor.cpp
 )
 
 add_executable(${TARGET} ${SOURCES})

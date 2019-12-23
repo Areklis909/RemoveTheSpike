@@ -29,15 +29,17 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
     auto counterCallback =  [&relaxAfterAlarm](){
         relaxAfterAlarm = false;
     };
-    auto counter = std::make_unique<Counter<decltype(counterCallback)> >(configuration.r, counterCallback);
+    auto counter = std::make_unique<Counter<decltype(counterCallback)>>(configuration.r, counterCallback);
     /*
-        Train the AR model for the first r samples
+        Train the AR model for the first r samples - do not accept any alarm
     */
+    relaxAfterAlarm = true;
     counter->enable();
+    
     for(int t = startPointOfProcessing; t < configuration.N; ++t) {
         signalParameters.computeEwlsAndVariance(t);
         counter->tick();
-        if(signalParameters.isAlarm() == true && relaxAfterAlarm == false) {
+        if(relaxAfterAlarm == false && signalParameters.isAlarm() == true) {
             VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(), configuration.mi, samples);
             int alarmLength = kalman.fixDamagedSamples(t);
             if(alarmLength >= configuration.maxAlarmLength) {

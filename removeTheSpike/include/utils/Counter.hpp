@@ -14,15 +14,15 @@ class Counter {
 public:
     Counter(const uint32_t p, T action) : period(p), ref_period(p), action(action), enabled(false) {};
 
-    void enable() {
+    void enable() noexcept {
         enabled = true;
     }
 
-    void disable() {
+    void disable() noexcept {
         enabled = false;
     }
 
-    bool isEnabled() {
+    bool isEnabled() const {
         return enabled;
     }
 
