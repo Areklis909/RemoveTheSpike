@@ -14,10 +14,10 @@ message(STATUS ${sndfile_location})
 add_library(sndfile SHARED IMPORTED)
 set_target_properties(sndfile PROPERTIES IMPORTED_LOCATION ${sndfile_location})
 
-find_library(libconfig_location NAMES libconfig.so)
+find_library(libconfig_location NAMES libconfig++.so)
 message(STATUS ${libconfig_location})
-add_library(libconfig SHARED IMPORTED)
-set_target_properties(libconfig PROPERTIES IMPORTED_LOCATION ${libconfig_location})
+add_library(config SHARED IMPORTED)
+set_target_properties(config PROPERTIES IMPORTED_LOCATION ${libconfig_location})
 
 set(SOURCES src/Source.cpp
     src/SignalParameters.cpp
@@ -32,7 +32,6 @@ set(SOURCES src/Source.cpp
 
 add_executable(${TARGET} ${SOURCES})
 
-
 target_link_libraries(${TARGET} PRIVATE armadillo)
 target_link_libraries(${TARGET} PRIVATE sndfile)
-target_link_libraries(${TARGET} PRIVATE libconfig)
+target_link_libraries(${TARGET} PRIVATE config)
