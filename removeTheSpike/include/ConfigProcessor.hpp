@@ -42,15 +42,15 @@ public:
     int readRo();
     int readMaxAlarmLength();
     int readMi();
-    int readLambda();
-    int readLambdaZero();
+    double readLambda();
+    double readLambdaZero();
 
     void writeModelOrder(const int r);
     void writeRo(const int ro);
     void writeMaxAlarmLength(const int length);
     void writeMi(const int mi);
-    void writeLambda(const int lambda);
-    void writeLambdaZero(const int lambdaZero);
+    void writeLambda(const double & lambda);
+    void writeLambdaZero(const double & lambdaZero);
 
     void commit(const std::string & configName);
 

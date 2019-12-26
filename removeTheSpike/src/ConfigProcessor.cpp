@@ -28,12 +28,12 @@ int ConfigProcessor::readMi() {
     return readSetting<int>(miStr);
 }
 
-int ConfigProcessor::readLambda() {
-    return readSetting<int>(lambdaStr);
+double ConfigProcessor::readLambda() {
+    return readSetting<double>(lambdaStr);
 }
 
-int ConfigProcessor::readLambdaZero() {
-    return readSetting<int>(lambdaZeroStr);
+double ConfigProcessor::readLambdaZero() {
+    return readSetting<double>(lambdaZeroStr);
 }
 
 void ConfigProcessor::writeModelOrder(const int r) {
@@ -52,16 +52,16 @@ void ConfigProcessor::writeMi(const int mi) {
     writeSetting(miStr, mi);
 }
 
-void ConfigProcessor::writeLambda(const int lambda) {
+void ConfigProcessor::writeLambda(const double & lambda) {
     writeSetting(lambdaStr, lambda);
 }
 
-void ConfigProcessor::writeLambdaZero(const int lambdaZero) {
+void ConfigProcessor::writeLambdaZero(const double & lambdaZero) {
     writeSetting(lambdaZeroStr, lambdaZero);
 }
 
 void ConfigProcessor::commit(const std::string & configName) {
-    config.writeFile(configName);
+    config.writeFile(configName.c_str());
 }
 
 
