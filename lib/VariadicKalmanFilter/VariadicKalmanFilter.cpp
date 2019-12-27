@@ -1,6 +1,7 @@
 #ifndef VARIADIC_KALMAN_CPP
 #define VARIADIC_KALMAN_CPP
-#include "../include/VariadicKalmanFilter.hpp"
+
+#include <VariadicKalmanFilter/VariadicKalmanFilter.hpp>
 
 using namespace arma;
 

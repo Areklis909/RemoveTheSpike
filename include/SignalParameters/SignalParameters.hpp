@@ -5,9 +5,9 @@
 #include <iostream>
 #include <memory>
 #include <sndfile.h>
-#include "LevinsonDurbin.hpp"
-#include "ModelStability.hpp"
-#include "utils/SwapBuffer.hpp"
+#include <LevinsonDurbin/LevinsonDurbin.hpp>
+#include <ModelStability/ModelStability.hpp>
+#include <utils/SwapBuffer.hpp>
 
 namespace NsSignalparameters {
 

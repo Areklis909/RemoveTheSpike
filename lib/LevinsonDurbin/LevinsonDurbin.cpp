@@ -1,7 +1,7 @@
 #ifndef LEVINSON_DURBIN_CPP
 #define LEVINSON_DURBIN_CPP
 
-#include "../include/LevinsonDurbin.hpp"
+#include <LevinsonDurbin/LevinsonDurbin.hpp>
 
 using std::vector;
 using NsSwapBuffer::SwapBuffer;

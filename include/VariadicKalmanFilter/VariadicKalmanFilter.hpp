@@ -5,8 +5,8 @@
 #include <armadillo>
 #include <algorithm>
 #include <iostream>
-#include "AlarmDescriptor.hpp"
-#include "SignalParameters.hpp"
+#include <AlarmDescriptor/AlarmDescriptor.hpp>
+//#include "SignalParameters.hpp"
 
 
 namespace NsVariadicKalmanFilter {

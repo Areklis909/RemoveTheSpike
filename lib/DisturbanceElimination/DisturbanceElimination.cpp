@@ -1,13 +1,22 @@
 #ifndef DISTURBANCE_CPP
 #define DISTURBANCE_CPP
 
-#include "../include/DisturbanceElimination.hpp"
+#include <DisturbanceElimination/DisturbanceElimination.hpp>
 #include <functional>
+
+using namespace NsConfigProcessor;
 
 namespace NsDisturbanceElimination {
 
-void DisturbanceElimination::initializeConfiguration() {
+void DisturbanceElimination::initializeConfiguration(const std::string & configName) {
+    ConfigProcessor processor(configName);
 
+    configuration.r = processor.readModelOrder();
+    configuration.ro = processor.readRo();
+    configuration.mi = processor.readMi();
+    configuration.maxAlarmLength = processor.readMaxAlarmLength();
+    configuration.lambda = processor.readLambda();
+    configuration.lambdaZero = processor.readLambdaZero();
 }
 
 std::shared_ptr<double[]> DisturbanceElimination::getSamplesToProcess(const std::string & filename) {
@@ -51,7 +60,7 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
 }
 
 
-DisturbanceElimination::DisturbanceElimination(const DisturbanceEliminationConfiguration & config) : configuration(config) {
+DisturbanceElimination::DisturbanceElimination() {
 }
 
 }

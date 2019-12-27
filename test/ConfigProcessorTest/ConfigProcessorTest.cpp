@@ -1,6 +1,6 @@
-#include <iostream>
 #include <gtest/gtest.h>
-#include "../../removeTheSpike/include/ConfigProcessor.hpp"
+#include <iostream>
+#include <ConfigProcessor/ConfigProcessor.hpp>
 
 using namespace NsConfigProcessor;
 

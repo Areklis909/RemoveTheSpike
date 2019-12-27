@@ -1,7 +1,7 @@
 #ifndef MODEL_STABILITY_CPP
 #define MODEL_STABILITY_CPP
 
-#include "../include/ModelStability.hpp"
+#include <ModelStability/ModelStability.hpp>
 
 using namespace arma;
 

@@ -2,7 +2,7 @@
 #define FILE_HANDLER_CPP
 
 #include <functional>
-#include "../include/FileHandler.hpp"
+#include <FileHandler/FileHandler.hpp>
 
 using NsObjectGuard::ObjectGuard;
 

@@ -1,7 +1,7 @@
 #ifndef SIGNAL_PARAMS_CPP
 #define SIGNAL_PARAMS_CPP
 
-#include "../include/SignalParameters.hpp"
+#include <SignalParameters/SignalParameters.hpp>
 
 using namespace arma;
 using NsSwapBuffer::SwapBuffer;

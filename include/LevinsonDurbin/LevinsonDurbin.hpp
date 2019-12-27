@@ -1,9 +1,9 @@
 #ifndef LEVINSON_DURBIN
 #define LEVINSON_DURBIN
 
-#include<memory>
-#include<armadillo>
-#include "utils/SwapBuffer.hpp"
+#include <memory>
+#include <armadillo>
+#include <utils/SwapBuffer.hpp>
 
 namespace NsLevinsonDurbin {
 

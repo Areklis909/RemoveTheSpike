@@ -1,7 +1,7 @@
 #ifndef MODEL_STABILITY
 #define MODEL_STABILITY
 
-#include<armadillo>
+#include <armadillo>
 
 namespace NsModelStability {
 
