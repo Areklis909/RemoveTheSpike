@@ -6,7 +6,7 @@ set(TARGET ConfigProcessor)
 
 project(${TARGET} VERSION 1.0.1 DESCRIPTION "ConfigProcessor")
 
-add_library(${TARGET} SHARED ConfigProcessor.cpp)
+add_library(${TARGET} ConfigProcessor.cpp)
 
 target_link_libraries(${TARGET} config)
 

@@ -6,7 +6,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 project(${TARGET} VERSION 1.0.1 DESCRIPTION "DisturbanceElimination")
 
-add_library(${TARGET} SHARED DisturbanceElimination.cpp)
+add_library(${TARGET} DisturbanceElimination.cpp)
 
 target_link_libraries(${TARGET} 
     FileHandler

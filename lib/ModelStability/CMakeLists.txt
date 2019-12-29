@@ -6,7 +6,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 project(${TARGET} VERSION 1.0.1 DESCRIPTION "ModelStability")
 
-add_library(${TARGET} SHARED ModelStability.cpp)
+add_library(${TARGET} ModelStability.cpp)
 
 target_link_libraries(${TARGET} 
     armadillo)

@@ -6,7 +6,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 project(${TARGET} VERSION 1.0.1 DESCRIPTION "FileHandler")
 
-add_library(${TARGET} SHARED FileHandler.cpp)
+add_library(${TARGET} FileHandler.cpp)
 
 target_link_libraries(${TARGET} 
     sndfile)
