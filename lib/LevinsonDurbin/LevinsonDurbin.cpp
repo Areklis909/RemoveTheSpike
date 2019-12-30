@@ -22,6 +22,7 @@ LevinsonDurbin::~LevinsonDurbin(void)
 {}
 
 vec LevinsonDurbin::getStableModel() {
+	// std::cout << "get stable model \n";
 	R.zeros();
 	p.zeros();
 
@@ -59,6 +60,7 @@ void LevinsonDurbin::updateLevinsonDurbinCoefficientsRecursive(const int t) {
 }
 
 void LevinsonDurbin::updateLevinsonDurbinCoefficients(const int t) {
+	// std::cout << "update LV" << '\n';
 	if(t < equivalentWindowLength) {
 		updateLevinsonDurbinCoefficientsClassic(t);
 	} else {

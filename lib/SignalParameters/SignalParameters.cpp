@@ -14,48 +14,50 @@ SignalParameters::SignalParameters(std::shared_ptr<double[]> data, const int ord
 	ro(roZero), lambda(lbda), lambdaZero(0.98), equivalentWindowLength((1+lambda)/(1-lambda)), y(data), mi(miTmp), commonBufferSize(2),
 	wektorWzmocnien(order, fill::zeros),
 	bledyEstymacji(0.0),
-	teta(commonBufferSize, r, fill::zeros),
+	teta(r, fill::zeros),
 	fi(r, fill::zeros),
-	kowBledow(r, r, fill::ones),
-	wariancjaSzumu(commonBufferSize, 0.0),
+	kowBledow(r, r, fill::eye),
+	wariancjaSzumu(0.0),
 	modelStability(r),
 	levinsonDurbin(r, equivalentWindowLength, y)
 {
 	kowBledow *= ro;
+
+	// f.open("file.dat", ios::out | ios::trunc);
+	// if(!f.good()) {
+	// 	throw std::runtime_error("f not good");
+	// }
 }
 
 
 SignalParameters::~SignalParameters(void)
 {
+		// f.close();
 }
 
 void SignalParameters::computeEwlsAndVariance(const int t) {
 
 	updateFi(t);
-	auto x = (y)[t] - (fi.t()) * (teta.get(BufferMoment::PREVIOUS));
+	auto x = (y)[t] - (fi.t()) * (teta);
 	bledyEstymacji = x.at(0,0);
 	auto num = (kowBledow) * (fi);
 	auto den = lambda + (fi.t() * (kowBledow) * (fi));
 	wektorWzmocnien = num/den.at(0,0);
 	mat Ir = eye<mat>(r, r);	
 	kowBledow =  (1/lambda) * (Ir - (wektorWzmocnien) * (fi.t())) * (kowBledow);
-	teta.get(BufferMoment::CURRENT) = teta.get(BufferMoment::PREVIOUS) + ((wektorWzmocnien) * bledyEstymacji);
+	teta = teta + ((wektorWzmocnien) * bledyEstymacji);
 	levinsonDurbin.updateLevinsonDurbinCoefficients(t);
-	if(modelStability.isModelStable(teta.get(BufferMoment::CURRENT)) == false) {
-		teta.get(BufferMoment::CURRENT) = levinsonDurbin.getStableModel();
-	}
-
-	teta.swap();
+	// f << fabs(bledyEstymacji) << " " << getErrorThreshold() << " " << y[t];
+	// f << std::endl;
 	updateWariancjaSzumuRecursive(t);
 }
 
 double SignalParameters::getWariancjaSzumu() {
-	return (wariancjaSzumu).get(BufferMoment::CURRENT);
+	return wariancjaSzumu;
 }
 
 void SignalParameters::updateWariancjaSzumuRecursive(const int t) {
-	wariancjaSzumu.get(BufferMoment::CURRENT) = wariancjaSzumu.get(BufferMoment::PREVIOUS) * lambdaZero + ((1 - lambdaZero) * pow(bledyEstymacji, 2));
-	wariancjaSzumu.swap();
+	wariancjaSzumu = wariancjaSzumu * lambdaZero + ((1 - lambdaZero) * pow(bledyEstymacji, 2));
 }
 
 double SignalParameters::getErrorThreshold() {
@@ -63,7 +65,7 @@ double SignalParameters::getErrorThreshold() {
 }
 
 bool SignalParameters::isAlarm() {
-	return abs(bledyEstymacji) > getErrorThreshold(); 
+	return fabs(bledyEstymacji) > getErrorThreshold(); 
 }
 
 double SignalParameters::getEquivalentWindowLength() const {
@@ -71,7 +73,10 @@ double SignalParameters::getEquivalentWindowLength() const {
 }
 
 vec & SignalParameters::getTeta(void) {
-	return teta.get(BufferMoment::CURRENT);
+	if(modelStability.isModelStable(teta) == false) {
+		teta = levinsonDurbin.getStableModel();
+	}
+	return teta;
 }
 
 void SignalParameters::updateFi(int t) {

@@ -28,12 +28,33 @@ int ConfigProcessor::readMi() {
     return readSetting<int>(miStr);
 }
 
+int ConfigProcessor::readSignalLength() {
+    return readSetting<int>(signalLengthStr);
+}
+
+int ConfigProcessor::readSampleRate() {
+    return readSetting<int>(sampleRateStr);
+}
+
+int ConfigProcessor::readNumberOfChannels() {
+    return readSetting<int>(numberOfChannelsStr);
+}
+
+
 double ConfigProcessor::readLambda() {
     return readSetting<double>(lambdaStr);
 }
 
 double ConfigProcessor::readLambdaZero() {
     return readSetting<double>(lambdaZeroStr);
+}
+
+std::string ConfigProcessor::readSoundFilePath() {
+    return readSetting<std::string>(soundFilePathStr);
+}
+
+std::string ConfigProcessor::readOutputFilePath() {
+    return readSetting<std::string>(outputFilePathStr);
 }
 
 void ConfigProcessor::writeModelOrder(const int r) {
@@ -58,6 +79,18 @@ void ConfigProcessor::writeLambda(const double & lambda) {
 
 void ConfigProcessor::writeLambdaZero(const double & lambdaZero) {
     writeSetting(lambdaZeroStr, lambdaZero);
+}
+
+void ConfigProcessor::writeSampleRate(const int sampleRate) {
+    writeSetting(sampleRateStr, sampleRate);
+}
+
+void ConfigProcessor::writeNumberOfChannels(const int numOfChannels) {
+    writeSetting(numberOfChannelsStr, numOfChannels);
+}
+
+void ConfigProcessor::writeSignalLength(const int length) {
+    writeSetting(signalLengthStr, length);
 }
 
 void ConfigProcessor::commit(const std::string & configName) {

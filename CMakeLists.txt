@@ -26,4 +26,4 @@ set_target_properties(config PROPERTIES IMPORTED_LOCATION ${libconfig_location})
 
 add_subdirectory(lib)
 add_subdirectory(test)
-#add_subdirectory(removeTheSpike)
+add_subdirectory(src)

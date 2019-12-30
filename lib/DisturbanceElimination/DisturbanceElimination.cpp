@@ -17,13 +17,17 @@ void DisturbanceElimination::initializeConfiguration(const std::string & configN
     configuration.maxAlarmLength = processor.readMaxAlarmLength();
     configuration.lambda = processor.readLambda();
     configuration.lambdaZero = processor.readLambdaZero();
+    configuration.N = processor.readSignalLength();
+    configuration.soundFileName = processor.readSoundFilePath();
+    configuration.outputFilePath = processor.readOutputFilePath();
 }
 
-std::shared_ptr<double[]> DisturbanceElimination::getSamplesToProcess(const std::string & filename) {
+std::shared_ptr<double[]> DisturbanceElimination::getSamplesToProcess() {
+    
     using NsFileHandler::FileHandler;
     
-    FileHandler fileHandler(filename, configuration.numberOfChannels, configuration.sampleRate);
-    return fileHandler.getSignalHandler(configuration.N);
+    fileHandler = std::make_unique<FileHandler>(configuration.soundFileName);
+    return fileHandler->getSignalHandler(configuration.N);
 }
 
 void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
@@ -48,20 +52,25 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
     for(int t = startPointOfProcessing; t < configuration.N; ++t) {
         signalParameters.computeEwlsAndVariance(t);
         counter->tick();
-        if(relaxAfterAlarm == false && signalParameters.isAlarm() == true) {
+        if(relaxAfterAlarm == false &&  signalParameters.isAlarm() == true) {
+            // std::cout << "alarm: " << t << '\n';
             VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(), configuration.mi, samples);
             int alarmLength = kalman.fixDamagedSamples(t);
             if(alarmLength >= configuration.maxAlarmLength) {
                 relaxAfterAlarm = true;
                 counter->enable();
             }
+            t += alarmLength;
         }
     }
 }
 
-
-DisturbanceElimination::DisturbanceElimination() {
+void DisturbanceElimination::saveSamples(std::shared_ptr<double[]> samples) {
+    fileHandler->writeSamples(samples, configuration.N, configuration.outputFilePath);
 }
+
+
+DisturbanceElimination::DisturbanceElimination() {}
 
 }
 

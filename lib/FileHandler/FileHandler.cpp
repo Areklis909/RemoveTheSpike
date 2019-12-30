@@ -8,15 +8,38 @@ using NsObjectGuard::ObjectGuard;
 
 namespace NsFileHandler {
 
-FileHandler::FileHandler(const std::string & p, const int numOfChan, const int rate) : path(p), numOfChannels(numOfChan), sampleRate(rate), numberOfFrames(0)
-{
-	// sampleRate = 48000;
-	// numberOfFrames = 0;
+SNDFILE * FileHandler::openSoundFileToRead() {
+	info = new SF_INFO();
+	info->format = 0;
+	file = sf_open(path.c_str(), SFM_READ, info);
+	if(file == nullptr) {
+		throw std::runtime_error("Sound file does not exist/wrong path!");
+	}
+	return file;
 }
 
+SNDFILE * FileHandler::openFileToWriteAndReuseInfo(const std::string & filename) {
+	SF_INFO * tmpInfo = new SF_INFO();
+	ObjectGuard guard([tmpInfo](){delete tmpInfo;});
+	tmpInfo->samplerate = info->samplerate;
+	tmpInfo->channels = info->channels;
+	tmpInfo->format = info->format;
+	auto file = sf_open(filename.c_str(), SFM_WRITE, tmpInfo);
+	if(file == nullptr) {
+		throw std::runtime_error("Failed to open sound file to write!");
+	}
+	return file;
+}
+
+FileHandler::FileHandler(const std::string & p) : path(p), numberOfFrames(0)
+{
+	file = openSoundFileToRead();
+}
 
 FileHandler::~FileHandler(void)
 {
+	delete info;
+	sf_close(file);
 }
 
 std::shared_ptr<double[]> FileHandler::getSignalHandler(const uint64_t numOfSamples) {
@@ -26,16 +49,8 @@ std::shared_ptr<double[]> FileHandler::getSignalHandler(const uint64_t numOfSamp
 }
 
 double * FileHandler::readSamples(const uint64_t numOfFrames) {
-	info = new SF_INFO();
-	ObjectGuard guard([this](){delete info;});
-
-	info->format = 0;
-
-	auto file = sf_open(path.c_str(), SFM_READ, info);
-	ObjectGuard sndGuard([&](){sf_close(file);});
-
-	std::cout << info->channels <<" "<< info->format <<" "<< info->samplerate << std::endl;
-	ptrToData = new double[numOfChannels * numOfFrames];
+	std::cout << info->channels <<" "<< info->format <<" "<< info->samplerate  << std::endl;
+	ptrToData = new double[info->channels * numOfFrames];
 	numberOfFrames = sf_readf_double(file, ptrToData, numOfFrames);
 	if(numberOfFrames != numOfFrames) {
 		std::cout << "Failed to read. Required value: " << numOfFrames << ". Number of frames read: " << numberOfFrames << '\n';
@@ -43,18 +58,18 @@ double * FileHandler::readSamples(const uint64_t numOfFrames) {
 	return ptrToData;
 }
 
-void FileHandler::writeSamples(std::shared_ptr<double[]> y, const uint64_t size) {
-	info = new SF_INFO();
-	ObjectGuard guard([this](){delete info;});
+void FileHandler::createFileToWrite(const std::string & filename) {
+	std::fstream f;
+	f.open(filename, std::ios::out);
+	f.close();
+}
 
-	info->channels = numOfChannels;
-	info->samplerate = sampleRate;
-	info->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	
-	auto file = sf_open(path.c_str(), SFM_WRITE, info);
-	ObjectGuard sndGuard([&](){sf_close(file);});
+void FileHandler::writeSamples(std::shared_ptr<double[]> y, const uint64_t size, const std::string & filename) {
 
-	auto count = sf_writef_double(file, y.get(), size);
+	createFileToWrite(filename);
+	SNDFILE * fileOut = openFileToWriteAndReuseInfo(filename);
+	ObjectGuard guard([fileOut](){delete fileOut;});
+	auto count = sf_writef_double(fileOut, y.get(), size);
 	if(count != size) {
 		std::cout <<"Number of Frames error" << std::endl;
 	}

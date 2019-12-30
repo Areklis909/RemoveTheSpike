@@ -14,6 +14,11 @@ class ConfigProcessor {
     const std::string miStr = "mi";
     const std::string lambdaStr = "lambda";
     const std::string lambdaZeroStr = "lambdaZero";
+    const std::string sampleRateStr = "sampleRate";
+    const std::string numberOfChannelsStr = "numberOfChannels";
+    const std::string signalLengthStr = "signalLength";
+    const std::string soundFilePathStr = "soundFileName";
+    const std::string outputFilePathStr = "outputFilePath";
 
     template<typename T>
     T readSetting(const std::string & settingName) {
@@ -42,13 +47,21 @@ public:
     int readRo();
     int readMaxAlarmLength();
     int readMi();
+    int readSampleRate();
+    int readNumberOfChannels();
+    int readSignalLength();
     double readLambda();
     double readLambdaZero();
+    std::string readSoundFilePath();
+    std::string readOutputFilePath();
 
     void writeModelOrder(const int r);
     void writeRo(const int ro);
     void writeMaxAlarmLength(const int length);
     void writeMi(const int mi);
+    void writeSampleRate(const int rate);
+    void writeNumberOfChannels(const int numOfChannels);
+    void writeSignalLength(const int signalLength);
     void writeLambda(const double & lambda);
     void writeLambdaZero(const double & lambdaZero);
 

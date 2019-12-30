@@ -8,6 +8,8 @@
 #include <LevinsonDurbin/LevinsonDurbin.hpp>
 #include <ModelStability/ModelStability.hpp>
 #include <utils/SwapBuffer.hpp>
+#include <fstream>
+
 
 namespace NsSignalparameters {
 
@@ -20,17 +22,18 @@ class SignalParameters
 	const int commonBufferSize;
 	const double lambda;
 	const double lambdaZero;
-	std::shared_ptr<double[]> y;
 	const double equivalentWindowLength;
-	arma::vec wektorWzmocnien;
+	std::shared_ptr<double[]> y;
+	double wariancjaSzumu;
 	double bledyEstymacji;
-	NsSwapBuffer::SwapBuffer<arma::vec> teta;
-	NsSwapBuffer::SwapBuffer<double> wariancjaSzumu;
+	arma::vec teta;
+	arma::vec wektorWzmocnien;
 	arma::vec fi;
 	arma::mat kowBledow;
 	arma::mat efektSzerOkna;
 	NsModelStability::ModelStability modelStability;
 	NsLevinsonDurbin::LevinsonDurbin levinsonDurbin;
+	std::fstream f;
 
 	void updateFi(int t);
 public:

@@ -58,21 +58,30 @@ VariadicKalmanFilter::VarKalStatus VariadicKalmanFilter::updateStateAndCovarianc
 	PqApriori.zeros();
 	(PqApriori)(currentIndex, currentIndex) = roTemp;
 	(PqApriori)(currentIndex + 1, currentIndex, size(q - 1, 1)) = (hq)(currentIndex - 1, 0, size(q - 1, 1));
-	(PqApriori)(currentIndex, currentIndex + 1, size(1, q - 1)) = (hq.t());
-	(PqApriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1)) = (PqAposteriori);
+	(PqApriori)(currentIndex, currentIndex + 1, size(1, q - 1)) = (hq)(currentIndex - 1, 0, size(q - 1, 1)).t();
+	(PqApriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1)) = (PqAposteriori)(currentIndex, currentIndex, size(q - 1, q - 1));
 	VarKalStatus status(roTemp, error);
 	return status;
 }
 
 void VariadicKalmanFilter::aposterioriUpdateDamaged() {
+	// std::cout << "Xapos:  "<< xAposteriori.n_cols << " " << xAposteriori.n_rows << '\n';
+	// std::cout << "Xaprio:  " << xApriori.n_cols << " " << xApriori.n_rows << '\n';
+
+	// std::cout << "Papos: " << PqAposteriori.n_cols << " " << PqAposteriori.n_rows << '\n';
+	// std::cout << "Pprio: " << PqApriori.n_cols << " " << PqApriori.n_rows << '\n';
+
 	(xAposteriori) = (xApriori);
 	(PqAposteriori) = (PqApriori);
 }
 
 void VariadicKalmanFilter::aposterioriUpdateNotDamaged(const VarKalStatus & status, const int q, const int currentIndex) {
-	auto lq = (1.0/status.ro) * (PqApriori)(currentIndex, currentIndex, size(q, 1));
-	(xAposteriori)(currentIndex, currentIndex, size(q, q)) = (xApriori)(currentIndex, currentIndex, size(q, q)) + lq * status.error;
-	(PqAposteriori)(currentIndex, currentIndex, size(q, q)) = (PqApriori)(currentIndex, currentIndex, size(q, q)) - status.ro * lq * lq.t();
+	// auto lq = (1.0/status.ro) * (PqApriori)(currentIndex, currentIndex, size(q, 1));
+	// (xAposteriori)(currentIndex, currentIndex, size(q, q)) = (xApriori)(currentIndex, currentIndex, size(q, q)) + lq * status.error;
+	// (PqAposteriori)(currentIndex, currentIndex, size(q, q)) = (PqApriori)(currentIndex, currentIndex, size(q, q)) - status.ro * lq * lq.t();
+	auto lq = (1.0/status.ro) * PqApriori.col(0);
+	xAposteriori = xApriori + lq * status.error;
+	PqAposteriori = PqApriori - status.ro * lq * lq.t();
 }
 
 int VariadicKalmanFilter::getAlarmLength(const int t) {
@@ -88,7 +97,7 @@ int VariadicKalmanFilter::getAlarmLength(const int t) {
 		if(length >= maxLengthOfDamagedBlock) break;
 
 		auto status = updateStateAndCovarianceMatrices(t, i, q, currentIndex);
-		if(abs(status.error) > mi * sqrt(status.ro)) {
+		if(fabs(status.error) > mi * sqrt(status.ro)) {
 			aposterioriUpdateDamaged();
 			goodSamples = 0;
 		} else {
@@ -113,12 +122,15 @@ void VariadicKalmanFilter::interpolate(const AlarmDescriptor & alarm) {
 }
 
 void VariadicKalmanFilter::pasteTheResult(const AlarmDescriptor & alarm) {
-	vec result = arma::reverse(xAposteriori(r, 1, size(alarm.length, 1)));
+	vec result = arma::reverse(xAposteriori(r - 1, 0, size(alarm.length, 1)));
 	memcpy(frames.get() + alarm.startSample, result.memptr(), alarm.length * sizeof(double));
+	// std::cout << "arek";
 }
 
 int VariadicKalmanFilter::fixDamagedSamples(const int t) {
+	// std::cout << "Start fixing" << '\n';
 	auto length = getAlarmLength(t);
+	// std::cout << "Alarm length " << length <<  '\n';
 	AlarmDescriptor descriptor(t, length);
 	interpolate(descriptor);
 	pasteTheResult(descriptor);
