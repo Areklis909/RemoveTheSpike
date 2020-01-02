@@ -19,24 +19,31 @@ SignalParameters::SignalParameters(std::shared_ptr<double[]> data, const int ord
 	kowBledow(r, r, fill::eye),
 	wariancjaSzumu(0.0),
 	modelStability(r),
+	previousTeta(r, fill::zeros),
+	previousWariancjaSzumu(0.0),
 	levinsonDurbin(r, equivalentWindowLength, y)
 {
 	kowBledow *= ro;
-
-	// f.open("file.dat", ios::out | ios::trunc);
-	// if(!f.good()) {
-	// 	throw std::runtime_error("f not good");
-	// }
 }
 
 
 SignalParameters::~SignalParameters(void)
 {
-		// f.close();
+}
+
+void SignalParameters::savePreviousParameters() {
+	previousTeta = teta;
+	previousWariancjaSzumu = wariancjaSzumu;
+}
+
+void SignalParameters::loadPreviousParameters() {
+	teta = previousTeta;
+	wariancjaSzumu = previousWariancjaSzumu;
 }
 
 void SignalParameters::computeEwlsAndVariance(const int t) {
 
+	savePreviousParameters();
 	updateFi(t);
 	auto x = (y)[t] - (fi.t()) * (teta);
 	bledyEstymacji = x.at(0,0);
@@ -47,8 +54,6 @@ void SignalParameters::computeEwlsAndVariance(const int t) {
 	kowBledow =  (1/lambda) * (Ir - (wektorWzmocnien) * (fi.t())) * (kowBledow);
 	teta = teta + ((wektorWzmocnien) * bledyEstymacji);
 	levinsonDurbin.updateLevinsonDurbinCoefficients(t);
-	// f << fabs(bledyEstymacji) << " " << getErrorThreshold() << " " << y[t];
-	// f << std::endl;
 	updateWariancjaSzumuRecursive(t);
 }
 

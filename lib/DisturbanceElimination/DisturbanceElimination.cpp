@@ -52,15 +52,19 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
     for(int t = startPointOfProcessing; t < configuration.N; ++t) {
         signalParameters.computeEwlsAndVariance(t);
         counter->tick();
-        if(relaxAfterAlarm == false &&  signalParameters.isAlarm() == true) {
-            // std::cout << "alarm: " << t << '\n';
-            VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(), configuration.mi, samples);
+
+        if(relaxAfterAlarm == true) continue;
+
+        if(signalParameters.isAlarm() == true) {
+            // std::cout << "alarm t: " << t << '\n';
+            signalParameters.loadPreviousParameters();
+            VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(), configuration.mi, samples, signalParameters.getWariancjaSzumu());
             int alarmLength = kalman.fixDamagedSamples(t);
             if(alarmLength >= configuration.maxAlarmLength) {
                 relaxAfterAlarm = true;
                 counter->enable();
             }
-            t += alarmLength;
+            t += alarmLength - 1;
         }
     }
 }

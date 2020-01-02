@@ -27,6 +27,8 @@ class SignalParameters
 	double wariancjaSzumu;
 	double bledyEstymacji;
 	arma::vec teta;
+	arma::vec previousTeta;
+	double previousWariancjaSzumu;
 	arma::vec wektorWzmocnien;
 	arma::vec fi;
 	arma::mat kowBledow;
@@ -36,6 +38,7 @@ class SignalParameters
 	std::fstream f;
 
 	void updateFi(int t);
+	void savePreviousParameters();
 public:
 	SignalParameters(std::shared_ptr<double[]> ptr, const int r, const int N, const int ro, const double lambda, const int miTmp);
 	~SignalParameters(void);
@@ -46,6 +49,7 @@ public:
 	double getErrorThreshold();
 	double getEquivalentWindowLength() const;
 	bool isAlarm();
+	void loadPreviousParameters();
 };
 
 }

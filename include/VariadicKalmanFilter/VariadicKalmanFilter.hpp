@@ -44,7 +44,7 @@ class VariadicKalmanFilter
 	int getAlarmLength(const int t);
 
 public:
-	VariadicKalmanFilter(const int r, const int maxLengthOfAlarm, const arma::vec & wsp, const int miTmp, std::shared_ptr<double[]> frms);
+	VariadicKalmanFilter(const int r, const int maxLengthOfAlarm, const arma::vec & wsp, const int miTmp, std::shared_ptr<double[]> frms, const double noiseVarianceBeforeAlarm);
 	~VariadicKalmanFilter(void);
 	int fixDamagedSamples(const int t);
 };
