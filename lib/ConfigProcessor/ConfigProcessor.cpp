@@ -40,6 +40,9 @@ int ConfigProcessor::readNumberOfChannels() {
     return readSetting<int>(numberOfChannelsStr);
 }
 
+int ConfigProcessor::readStartPointOfProcessing() {
+    return readSetting<int>(startPointOfProcessingStr);
+}
 
 double ConfigProcessor::readLambda() {
     return readSetting<double>(lambdaStr);

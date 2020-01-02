@@ -13,7 +13,7 @@ maxLengthOfDamagedBlock(maxLengthOfAlarm),
 wspAutoregresji(wsp),
 frames(frms),
 qMax((2*r)+maxLengthOfDamagedBlock),
-mi(miTmp), // 4
+mi(miTmp),
 xApriori(qMax, fill::zeros),
 xAposteriori(qMax, fill::zeros),
 PqApriori(qMax, qMax, fill::zeros),
@@ -44,21 +44,23 @@ void VariadicKalmanFilter::initMatrices(const int t) {
 }
 
 VariadicKalmanFilter::VarKalStatus VariadicKalmanFilter::updateStateAndCovarianceMatrices(const int t, const int i, const int q, const int currentIndex) {
-	auto theta = createTheta(t - 1, q - 1);
-	mat y = (theta).t() * (xAposteriori)(0, 0, size(q - 1, 1));
-	double error = (frames)[t + 1 + i] - y(0,0);
+	const auto theta = createTheta(t - 1, q - 1);
+	const mat y = (theta).t() * (xAposteriori)(0, 0, size(q - 1, 1));
+	const double error = (frames)[t + 1 + i] - y(0,0);
 	xApriori.zeros();
 	(xApriori)(0, 0) = y(0,0);
 	(xApriori)(1, 0, size(q - 1, 1)) = (xAposteriori)(0, 0, size(q - 1, 1));
 	(hq)(0, 0, size(q - 1, 1)) = (PqAposteriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1)) * (theta);
-	auto roTmp = ((theta).t() * (hq)(0, 0, size(q - 1, 1))) + var;
-	double ro = roTmp.at(0, 0);
+	const auto roTmp = ((theta).t() * (hq)(0, 0, size(q - 1, 1))) + var;
+	const double ro = roTmp.at(0, 0);
 	PqApriori.zeros();
 	(PqApriori)(currentIndex, currentIndex) = ro;
 	(PqApriori)(currentIndex + 1, currentIndex, size(q - 1, 1)) = (hq)(0, 0, size(q - 1, 1));
 	(PqApriori)(currentIndex, currentIndex + 1, size(1, q - 1)) = (hq)(0, 0, size(q - 1, 1)).t();
-	(PqApriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1)) = (PqAposteriori)(currentIndex, currentIndex, size(q - 1, q - 1));
+	(PqApriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1)) = (PqAposteriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1));
 	VarKalStatus status(ro, error);
+	// PqApriori.print(std::to_string(currentIndex));
+	// std::cout << '\n';
 	return status;
 }
 
@@ -68,7 +70,7 @@ void VariadicKalmanFilter::aposterioriUpdateDamaged() {
 }
 
 void VariadicKalmanFilter::aposterioriUpdateNotDamaged(const VarKalStatus & status, const int q, const int currentIndex) {
-	auto lq = PqApriori.col(currentIndex)/status.ro;
+	const auto lq = PqApriori.col(currentIndex)/status.ro;
 	xAposteriori = xApriori + (lq * status.error);
 	PqAposteriori = PqApriori - status.ro * lq * lq.t();
 }
@@ -85,7 +87,7 @@ int VariadicKalmanFilter::getAlarmLength(const int t) {
 
 		if(length >= maxLengthOfDamagedBlock) break;
 
-		auto status = updateStateAndCovarianceMatrices(t, i, q, currentIndex);
+		const auto status = updateStateAndCovarianceMatrices(t, i, q, currentIndex);
 		if(fabs(status.error) > mi * sqrt(status.ro)) {
 			aposterioriUpdateDamaged();
 			goodSamples = 0;
@@ -116,7 +118,7 @@ void VariadicKalmanFilter::pasteTheResult(const AlarmDescriptor & alarm) {
 }
 
 int VariadicKalmanFilter::fixDamagedSamples(const int t) {
-	auto length = getAlarmLength(t);
+	const auto length = getAlarmLength(t);
 	AlarmDescriptor descriptor(t, length);
 	interpolate(descriptor);
 	pasteTheResult(descriptor);

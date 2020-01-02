@@ -19,6 +19,7 @@ class ConfigProcessor {
     const std::string signalLengthStr = "signalLength";
     const std::string soundFilePathStr = "soundFileName";
     const std::string outputFilePathStr = "outputFilePath";
+    const std::string startPointOfProcessingStr = "startPointOfProcessing";
 
     template<typename T>
     T readSetting(const std::string & settingName) {
@@ -50,6 +51,7 @@ public:
     int readSampleRate();
     int readNumberOfChannels();
     int readSignalLength();
+    int readStartPointOfProcessing();
     double readLambda();
     double readLambdaZero();
     std::string readSoundFilePath();

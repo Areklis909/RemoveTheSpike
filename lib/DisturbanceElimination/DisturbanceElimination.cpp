@@ -20,6 +20,7 @@ void DisturbanceElimination::initializeConfiguration(const std::string & configN
     configuration.N = processor.readSignalLength();
     configuration.soundFileName = processor.readSoundFilePath();
     configuration.outputFilePath = processor.readOutputFilePath();
+    configuration.startPointOfProcessing = processor.readStartPointOfProcessing();
 }
 
 std::shared_ptr<double[]> DisturbanceElimination::getSamplesToProcess() {
@@ -37,19 +38,19 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
     using NsCounter::Counter;
 
     SignalParameters signalParameters(samples, configuration.r, configuration.N, configuration.ro, configuration.lambda, configuration.mi);
-    const int startPointOfProcessing = 0;
     bool relaxAfterAlarm = false;
     auto counterCallback =  [&relaxAfterAlarm](){
         relaxAfterAlarm = false;
     };
-    auto counter = std::make_unique<Counter<decltype(counterCallback)>>(configuration.r, counterCallback);
+    const int delayAfterLongAlarmInSamples = 2 * configuration.r;
+    auto counter = std::make_unique<Counter<decltype(counterCallback)>>(delayAfterLongAlarmInSamples, counterCallback);
     /*
         Train the AR model for the first r samples - do not accept any alarm
     */
     relaxAfterAlarm = true;
     counter->enable();
     
-    for(int t = startPointOfProcessing; t < configuration.N; ++t) {
+    for(int t = configuration.startPointOfProcessing; t < configuration.N; ++t) {
         signalParameters.computeEwlsAndVariance(t);
         counter->tick();
 

@@ -20,15 +20,16 @@ public:
         int mi;
         int sampleRate;
         int numberOfChannels;
+        int startPointOfProcessing;
         double lambda;
         double lambdaZero;
         std::string soundFileName;
         std::string outputFilePath;
 
         DisturbanceEliminationConfiguration(const int r, const int N, const int ro, const int maxAlarmLength, const int mi,
-        const int sampleRate, const int numberOfChannels, const double lambda, const double lambdaZero, const std::string & fnm) : r(r), N(N), ro(ro),
-        maxAlarmLength(maxAlarmLength), mi(mi), sampleRate(sampleRate), numberOfChannels(numberOfChannels), lambda(lambda), lambdaZero(lambdaZero), soundFileName(fnm) {};
-        DisturbanceEliminationConfiguration() : r(0), N(0), ro(0),
+        const int sampleRate, const int numberOfChannels, const int startPoint, const double lambda, const double lambdaZero, const std::string & fnm) : r(r), N(N), ro(ro),
+         startPointOfProcessing(startPoint), maxAlarmLength(maxAlarmLength), mi(mi), sampleRate(sampleRate), numberOfChannels(numberOfChannels), lambda(lambda), lambdaZero(lambdaZero), soundFileName(fnm) {};
+        DisturbanceEliminationConfiguration() : r(0), N(0), ro(0), startPointOfProcessing(0),
         maxAlarmLength(50), mi(4), sampleRate(44100), numberOfChannels(2), lambda(0.99), lambdaZero(0.98) {};
     };
 
