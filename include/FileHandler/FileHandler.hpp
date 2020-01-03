@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <utils/ObjectGuard.hpp>
+#include <Signal/Signal.hpp>
 
 namespace NsFileHandler {
 
@@ -27,9 +28,9 @@ private:
 public:
 	FileHandler(const std::string & path);
 	~FileHandler(void);
-	void writeSamples(std::shared_ptr<double[]> y, const uint64_t size, const std::string & filename);
+	void writeSamples(NsSignal::Signal<double> & signal, const std::string & filename);
 	int getNumberOfFrames();
-	std::shared_ptr<double[]> getSignalHandler(const uint64_t numOfSamples);
+	NsSignal::Signal<double> getSignalHandler(const uint64_t numOfSamples);
 };
 
 }

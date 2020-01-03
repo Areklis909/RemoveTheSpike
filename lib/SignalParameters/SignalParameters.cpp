@@ -10,8 +10,8 @@ using NsBufferMoment::BufferMoment;
 
 namespace NsSignalparameters {
 
-SignalParameters::SignalParameters(std::shared_ptr<double[]> data, const int order, const int len, const int roZero, const double lbda, const int miTmp) : r(order), N(len),
-	ro(roZero), lambda(lbda), lambdaZero(0.98), equivalentWindowLength((1+lambda)/(1-lambda)), y(data), mi(miTmp), commonBufferSize(2),
+SignalParameters::SignalParameters(std::shared_ptr<double[]> data, const int order, const int len, const int roZero, const double lbda, const double lbdaZero, const int miTmp) : r(order), N(len),
+	ro(roZero), lambda(lbda), lambdaZero(lbdaZero), equivalentWindowLength((1+lambda)/(1-lambda)), y(data), mi(miTmp),
 	wektorWzmocnien(order, fill::zeros),
 	bledyEstymacji(0.0),
 	teta(r, fill::zeros),
@@ -50,10 +50,10 @@ void SignalParameters::computeEwlsAndVariance(const int t) {
 	auto num = (kowBledow) * (fi);
 	auto den = lambda + (fi.t() * (kowBledow) * (fi));
 	wektorWzmocnien = num/den.at(0,0);
-	mat Ir = eye<mat>(r, r);	
-	kowBledow =  (1/lambda) * (Ir - (wektorWzmocnien) * (fi.t())) * (kowBledow);
+	mat Ir = eye<mat>(r, r);
+	kowBledow =  (1.0/lambda) * (Ir - (wektorWzmocnien) * (fi.t())) * (kowBledow);
 	teta = teta + ((wektorWzmocnien) * bledyEstymacji);
-	levinsonDurbin.updateLevinsonDurbinCoefficients(t);
+	// levinsonDurbin.updateLevinsonDurbinCoefficients(t);
 	updateWariancjaSzumuRecursive(t);
 }
 
@@ -77,15 +77,15 @@ double SignalParameters::getEquivalentWindowLength() const {
 	return equivalentWindowLength;
 }
 
-vec & SignalParameters::getTeta(void) {
+vec & SignalParameters::getTeta(const int t) {
 	if(modelStability.isModelStable(teta) == false) {
-		teta = levinsonDurbin.getStableModel();
+		teta = levinsonDurbin.getStableModel(t);
 	}
 	return teta;
 }
 
 void SignalParameters::updateFi(int t) {
-	for(int i = 1; i <= r; i++) {
+	for(int i = 1; i <= r; ++i) {
 		if(t-i < 0) {
 			(fi)(i-1) = 0;
 		} else {

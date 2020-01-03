@@ -8,7 +8,8 @@ using namespace arma;
 namespace NsVariadicKalmanFilter {
 
 
-VariadicKalmanFilter::VariadicKalmanFilter(const int r, const int maxLengthOfAlarm, const vec & wsp, const int miTmp, std::shared_ptr<double[]> frms, const double noiseVarianceBeforeAlarm) : r(r),
+VariadicKalmanFilter::VariadicKalmanFilter(const int r, const int maxLengthOfAlarm, const vec & wsp, const int miTmp, std::shared_ptr<double[]> frms,
+	 const double & noiseVarianceBeforeAlarm) : r(r),
 maxLengthOfDamagedBlock(maxLengthOfAlarm),
 wspAutoregresji(wsp),
 frames(frms),
@@ -30,7 +31,6 @@ VariadicKalmanFilter::~VariadicKalmanFilter() {
 vec VariadicKalmanFilter::createTheta(const int t, const int q) {
 	vec theta(q, fill::zeros);
 	for(int i = 0; i < r; ++i) {
-		// (theta)(i) = (wspAutoregresji)(r-i-1); // nie na odwrót?
 		(theta)(i) = wspAutoregresji(i);
 	}
 	return theta;
@@ -59,8 +59,6 @@ VariadicKalmanFilter::VarKalStatus VariadicKalmanFilter::updateStateAndCovarianc
 	(PqApriori)(currentIndex, currentIndex + 1, size(1, q - 1)) = (hq)(0, 0, size(q - 1, 1)).t();
 	(PqApriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1)) = (PqAposteriori)(currentIndex + 1, currentIndex + 1, size(q - 1, q - 1));
 	VarKalStatus status(ro, error);
-	// PqApriori.print(std::to_string(currentIndex));
-	// std::cout << '\n';
 	return status;
 }
 

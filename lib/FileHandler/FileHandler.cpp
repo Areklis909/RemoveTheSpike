@@ -5,6 +5,7 @@
 #include <FileHandler/FileHandler.hpp>
 
 using NsObjectGuard::ObjectGuard;
+using NsSignal::Signal;
 
 namespace NsFileHandler {
 
@@ -42,10 +43,10 @@ FileHandler::~FileHandler(void)
 	sf_close(file);
 }
 
-std::shared_ptr<double[]> FileHandler::getSignalHandler(const uint64_t numOfSamples) {
+Signal<double> FileHandler::getSignalHandler(const uint64_t numOfSamples) {
 	auto samples = readSamples(numOfSamples);
-	std::cout << "Samples read: " << getNumberOfFrames() << std::endl;
-	return std::shared_ptr<double[]>(samples, [](double * p){ delete [] p; } );
+	Signal<double> signal(samples, getNumberOfFrames());
+	return signal;
 }
 
 double * FileHandler::readSamples(const uint64_t numOfFrames) {
@@ -64,13 +65,13 @@ void FileHandler::createFileToWrite(const std::string & filename) {
 	f.close();
 }
 
-void FileHandler::writeSamples(std::shared_ptr<double[]> y, const uint64_t size, const std::string & filename) {
+void FileHandler::writeSamples(Signal<double> & signal, const std::string & filename) {
 
 	createFileToWrite(filename);
 	SNDFILE * fileOut = openFileToWriteAndReuseInfo(filename);
 	ObjectGuard guard([fileOut](){delete fileOut;});
-	auto count = sf_writef_double(fileOut, y.get(), size);
-	if(count != size) {
+	auto count = sf_writef_double(fileOut, signal.getSignal().get(), signal.getLength());
+	if(count != signal.getLength()) {
 		std::cout <<"Number of Frames error" << std::endl;
 	}
 

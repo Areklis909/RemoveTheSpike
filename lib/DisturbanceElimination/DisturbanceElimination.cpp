@@ -1,10 +1,11 @@
 #ifndef DISTURBANCE_CPP
 #define DISTURBANCE_CPP
 
-#include <DisturbanceElimination/DisturbanceElimination.hpp>
 #include <functional>
+#include <DisturbanceElimination/DisturbanceElimination.hpp>
 
 using namespace NsConfigProcessor;
+using NsSignal::Signal;
 
 namespace NsDisturbanceElimination {
 
@@ -23,7 +24,7 @@ void DisturbanceElimination::initializeConfiguration(const std::string & configN
     configuration.startPointOfProcessing = processor.readStartPointOfProcessing();
 }
 
-std::shared_ptr<double[]> DisturbanceElimination::getSamplesToProcess() {
+ Signal<double> DisturbanceElimination::getSamplesToProcess() {
     
     using NsFileHandler::FileHandler;
     
@@ -31,13 +32,13 @@ std::shared_ptr<double[]> DisturbanceElimination::getSamplesToProcess() {
     return fileHandler->getSignalHandler(configuration.N);
 }
 
-void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
+void DisturbanceElimination::processSamples(NsSignal::Signal<double> & signal) {
 
     using NsSignalparameters::SignalParameters;
     using NsVariadicKalmanFilter::VariadicKalmanFilter;
     using NsCounter::Counter;
 
-    SignalParameters signalParameters(samples, configuration.r, configuration.N, configuration.ro, configuration.lambda, configuration.mi);
+    SignalParameters signalParameters(signal.getSignal(), configuration.r, signal.getLength(), configuration.ro, configuration.lambda, configuration.lambdaZero, configuration.mi);
     bool relaxAfterAlarm = false;
     auto counterCallback =  [&relaxAfterAlarm](){
         relaxAfterAlarm = false;
@@ -50,7 +51,7 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
     relaxAfterAlarm = true;
     counter->enable();
     
-    for(int t = configuration.startPointOfProcessing; t < configuration.N; ++t) {
+    for(int t = configuration.startPointOfProcessing; t < signal.getLength(); ++t) {
         signalParameters.computeEwlsAndVariance(t);
         counter->tick();
 
@@ -59,7 +60,7 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
         if(signalParameters.isAlarm() == true) {
             // std::cout << "alarm t: " << t << '\n';
             signalParameters.loadPreviousParameters();
-            VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(), configuration.mi, samples, signalParameters.getWariancjaSzumu());
+            VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(t), configuration.mi, signal.getSignal(), signalParameters.getWariancjaSzumu());
             int alarmLength = kalman.fixDamagedSamples(t);
             if(alarmLength >= configuration.maxAlarmLength) {
                 relaxAfterAlarm = true;
@@ -70,8 +71,8 @@ void DisturbanceElimination::processSamples(std::shared_ptr<double[]> samples) {
     }
 }
 
-void DisturbanceElimination::saveSamples(std::shared_ptr<double[]> samples) {
-    fileHandler->writeSamples(samples, configuration.N, configuration.outputFilePath);
+void DisturbanceElimination::saveSamples(NsSignal::Signal<double> & signal) {
+    fileHandler->writeSamples(signal, configuration.outputFilePath);
 }
 
 

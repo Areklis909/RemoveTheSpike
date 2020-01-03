@@ -6,6 +6,7 @@
 #include <FileHandler/FileHandler.hpp>
 #include <ConfigProcessor/ConfigProcessor.hpp>
 #include <utils/Counter.hpp>
+#include <Signal/Signal.hpp>
 
 namespace NsDisturbanceElimination {
 
@@ -35,9 +36,9 @@ public:
 
     DisturbanceElimination();
     void initializeConfiguration(const std::string & configName);
-    std::shared_ptr<double[]> getSamplesToProcess();
-    void processSamples(std::shared_ptr<double[]> samples);
-    void saveSamples(std::shared_ptr<double[]> samples);
+    NsSignal::Signal<double> getSamplesToProcess();
+    void processSamples(NsSignal::Signal<double> & signal);
+    void saveSamples(NsSignal::Signal<double> & signal);
 
 private:
     std::unique_ptr<NsFileHandler::FileHandler> fileHandler;

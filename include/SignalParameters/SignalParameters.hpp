@@ -19,7 +19,6 @@ class SignalParameters
 	const int N;
 	const int ro;
 	const int mi;
-	const int commonBufferSize;
 	const double lambda;
 	const double lambdaZero;
 	const double equivalentWindowLength;
@@ -28,22 +27,21 @@ class SignalParameters
 	double bledyEstymacji;
 	arma::vec teta;
 	arma::vec previousTeta;
-	double previousWariancjaSzumu;
 	arma::vec wektorWzmocnien;
 	arma::vec fi;
 	arma::mat kowBledow;
 	arma::mat efektSzerOkna;
 	NsModelStability::ModelStability modelStability;
 	NsLevinsonDurbin::LevinsonDurbin levinsonDurbin;
-	std::fstream f;
+	double previousWariancjaSzumu;
 
 	void updateFi(int t);
 	void savePreviousParameters();
 public:
-	SignalParameters(std::shared_ptr<double[]> ptr, const int r, const int N, const int ro, const double lambda, const int miTmp);
+	SignalParameters(std::shared_ptr<double[]> ptr, const int r, const int N, const int ro, const double lambda, const double lambdaZero, const int miTmp);
 	~SignalParameters(void);
 	void computeEwlsAndVariance(const int t);
-	arma::vec & getTeta(void);
+	arma::vec & getTeta(const int t);
 	double getWariancjaSzumu();
 	void updateWariancjaSzumuRecursive(const int t);
 	double getErrorThreshold();
