@@ -10,7 +10,6 @@ class LevinsonDurbin
 {
 	const int r;
 	const double equivalentWindowLength;
-	const int maxBufferSize;
 	arma::mat R;
 	arma::vec p;
 	arma::vec pk;

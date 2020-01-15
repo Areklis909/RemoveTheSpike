@@ -10,17 +10,24 @@ using NsBufferMoment::BufferMoment;
 
 namespace NsSignalparameters {
 
-SignalParameters::SignalParameters(std::shared_ptr<double[]> data, const int order, const int len, const int roZero, const double lbda, const double lbdaZero, const int miTmp) : r(order), N(len),
-	ro(roZero), lambda(lbda), lambdaZero(lbdaZero), equivalentWindowLength((1+lambda)/(1-lambda)), y(data), mi(miTmp),
-	wektorWzmocnien(order, fill::zeros),
+SignalParameters::SignalParameters(std::shared_ptr<double[]> data, const int order, const int len, const int roZero, const double lbda, const double lbdaZero, const int miTmp) : 
+	r(order),
+	N(len),
+	ro(roZero),
+	lambda(lbda),
+	lambdaZero(lbdaZero),
+	equivalentWindowLength((1+lambda)/(1-lambda)),
+	y(data),
+	mi(miTmp),
+	wektorWzmocnien(r, fill::zeros),
 	bledyEstymacji(0.0),
 	teta(r, fill::zeros),
 	fi(r, fill::zeros),
 	kowBledow(r, r, fill::eye),
 	wariancjaSzumu(0.0),
-	modelStability(r),
 	previousTeta(r, fill::zeros),
 	previousWariancjaSzumu(0.0),
+	modelStability(r),
 	levinsonDurbin(r, equivalentWindowLength, y)
 {
 	kowBledow *= ro;

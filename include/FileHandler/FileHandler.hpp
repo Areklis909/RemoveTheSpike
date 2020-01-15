@@ -21,7 +21,7 @@ private:
 	SNDFILE * file;
 	uint64_t numberOfFrames;
 
-	double * readSamples(const uint64_t numOfSamples);
+	double * readSamples(const int64_t numOfSamples);
 	void createFileToWrite(const std::string & filename);
 	SNDFILE * openSoundFileToRead();
 	SNDFILE * openFileToWriteAndReuseInfo(const std::string & filename);
@@ -30,7 +30,7 @@ public:
 	~FileHandler(void);
 	void writeSamples(NsSignal::Signal<double> & signal, const std::string & filename);
 	int getNumberOfFrames();
-	NsSignal::Signal<double> getSignalHandler(const uint64_t numOfSamples);
+	NsSignal::Signal<double> getSignalHandler(const int64_t numOfSamples);
 };
 
 }

@@ -12,7 +12,7 @@ class Counter {
     bool enabled;
 
 public:
-    Counter(const uint32_t p, T action) : period(p), ref_period(p), action(action), enabled(false) {};
+    Counter(const uint32_t p, T action) : action(action), period(p), ref_period(p) , enabled(false) {};
 
     void enable() noexcept {
         enabled = true;

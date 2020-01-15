@@ -9,7 +9,7 @@ template<typename T>
 class Signal {
 
     std::shared_ptr<T[]> signal;
-    uint64_t length;
+    int64_t length;
 
 public:
 
@@ -22,7 +22,7 @@ public:
         return signal;
     }
 
-    uint64_t getLength() {
+    int64_t getLength() {
         return length;
     }
 

@@ -17,11 +17,11 @@ public:
         int r;
         int N;
         int ro;
+        int startPointOfProcessing;
         int maxAlarmLength;
         int mi;
         int sampleRate;
         int numberOfChannels;
-        int startPointOfProcessing;
         double lambda;
         double lambdaZero;
         std::string soundFileName;

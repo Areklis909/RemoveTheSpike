@@ -9,10 +9,13 @@ using namespace arma;
 namespace NsLevinsonDurbin {
 
 
-LevinsonDurbin::LevinsonDurbin(const int r, const double windowLength, std::shared_ptr<double[]> signal) : r(r), maxBufferSize(2), R(r, r, fill::zeros), p(r, fill::zeros),
+LevinsonDurbin::LevinsonDurbin(const int r, const double windowLength, std::shared_ptr<double[]> signal) : 
+	r(r),
 	equivalentWindowLength(windowLength),
-	y(signal),
-	pk(r+1, fill::zeros)
+	R(r, r, fill::zeros),
+	p(r, fill::zeros),
+	pk(r+1, fill::zeros),
+	y(signal)
 {}
 
 

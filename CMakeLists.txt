@@ -4,7 +4,8 @@ project(RemoveTheSpike)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(GCC_COVERAGE_COMPILE_FLAGS "-O1 -Wall")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # libarmadillo is installed in /usr/local/lib - find it

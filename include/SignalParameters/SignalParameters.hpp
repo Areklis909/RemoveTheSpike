@@ -18,22 +18,21 @@ class SignalParameters
 	const int r;
 	const int N;
 	const int ro;
-	const int mi;
 	const double lambda;
 	const double lambdaZero;
 	const double equivalentWindowLength;
 	std::shared_ptr<double[]> y;
-	double wariancjaSzumu;
+	const int mi;
+	arma::vec wektorWzmocnien;
 	double bledyEstymacji;
 	arma::vec teta;
-	arma::vec previousTeta;
-	arma::vec wektorWzmocnien;
 	arma::vec fi;
 	arma::mat kowBledow;
-	arma::mat efektSzerOkna;
+	double wariancjaSzumu;
+	arma::vec previousTeta;
+	double previousWariancjaSzumu;
 	NsModelStability::ModelStability modelStability;
 	NsLevinsonDurbin::LevinsonDurbin levinsonDurbin;
-	double previousWariancjaSzumu;
 
 	void updateFi(int t);
 	void savePreviousParameters();

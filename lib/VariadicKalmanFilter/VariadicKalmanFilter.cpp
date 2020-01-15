@@ -9,18 +9,19 @@ namespace NsVariadicKalmanFilter {
 
 
 VariadicKalmanFilter::VariadicKalmanFilter(const int r, const int maxLengthOfAlarm, const vec & wsp, const int miTmp, std::shared_ptr<double[]> frms,
-	 const double & noiseVarianceBeforeAlarm) : r(r),
-maxLengthOfDamagedBlock(maxLengthOfAlarm),
-wspAutoregresji(wsp),
-frames(frms),
-qMax((2*r)+maxLengthOfDamagedBlock),
-mi(miTmp),
-xApriori(qMax, fill::zeros),
-xAposteriori(qMax, fill::zeros),
-PqApriori(qMax, qMax, fill::zeros),
-PqAposteriori(qMax, qMax, fill::zeros),
-hq(qMax, fill::zeros),
-var(1, 1, fill::zeros)
+	 const double & noiseVarianceBeforeAlarm) : 
+	r(r),
+	maxLengthOfDamagedBlock(maxLengthOfAlarm),
+	qMax((2*r)+maxLengthOfDamagedBlock),
+	mi(miTmp),
+	frames(frms),
+	wspAutoregresji(wsp),
+	xApriori(qMax, fill::zeros),
+	xAposteriori(qMax, fill::zeros),
+	PqApriori(qMax, qMax, fill::zeros),
+	PqAposteriori(qMax, qMax, fill::zeros),
+	hq(qMax, fill::zeros),
+	var(1, 1, fill::zeros)
 {
 	var(0,0) = noiseVarianceBeforeAlarm;
 }
@@ -68,7 +69,7 @@ void VariadicKalmanFilter::aposterioriUpdateDamaged() {
 }
 
 void VariadicKalmanFilter::aposterioriUpdateNotDamaged(const VarKalStatus & status, const int q, const int currentIndex) {
-	const auto lq = PqApriori.col(currentIndex)/status.ro;
+	const vec lq = PqApriori.col(currentIndex)/status.ro;
 	xAposteriori = xApriori + (lq * status.error);
 	PqAposteriori = PqApriori - status.ro * lq * lq.t();
 }
@@ -84,7 +85,6 @@ int VariadicKalmanFilter::getAlarmLength(const int t) {
 	for(int i = 0; goodSamples < r; ++i, ++q, ++length, --currentIndex) {
 
 		if(length >= maxLengthOfDamagedBlock) break;
-
 		const auto status = updateStateAndCovarianceMatrices(t, i, q, currentIndex);
 		if(fabs(status.error) > mi * sqrt(status.ro)) {
 			aposterioriUpdateDamaged();
@@ -120,7 +120,6 @@ int VariadicKalmanFilter::fixDamagedSamples(const int t) {
 	AlarmDescriptor descriptor(t, length);
 	interpolate(descriptor);
 	pasteTheResult(descriptor);
-
 	return length;
 }
 

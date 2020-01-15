@@ -20,17 +20,16 @@ class VariadicKalmanFilter
 		VarKalStatus(double roTemp, double errorTemp) : ro(roTemp), error(errorTemp) {};
 	};
 	
-	// int q; // aktualny rzad modelu
-	const int maxLengthOfDamagedBlock;
 	const int r;
+	const int maxLengthOfDamagedBlock;
 	const int qMax;
 	const int mi;
-	arma::vec wspAutoregresji;
 	std::shared_ptr<double[]> frames;
-	arma::vec xAposteriori;
+	arma::vec wspAutoregresji;
 	arma::vec xApriori;
-	arma::mat PqAposteriori;
+	arma::vec xAposteriori;
 	arma::mat PqApriori;
+	arma::mat PqAposteriori;
 	arma::vec hq;
 	arma::mat var;
 
