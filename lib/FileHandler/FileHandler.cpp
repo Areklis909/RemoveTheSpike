@@ -43,19 +43,22 @@ FileHandler::~FileHandler(void)
 	sf_close(file);
 }
 
-Signal<double> FileHandler::getSignalHandler(const int64_t numOfSamples) {
+Signal<double> FileHandler::getSignalHandler(int64_t numOfSamples) {
+	if(numOfSamples == Samples::READ_ALL) {
+		numOfSamples = info->frames;
+	}
 	auto samples = readSamples(numOfSamples);
 	Signal<double> signal(samples, getNumberOfFrames());
 	return signal;
 }
 
 double * FileHandler::readSamples(const int64_t numOfFrames) {
-	std::cout << info->channels <<" "<< info->format <<" "<< info->samplerate  << std::endl;
 	ptrToData = new double[info->channels * numOfFrames];
 	numberOfFrames = sf_readf_double(file, ptrToData, numOfFrames);
 	if(numberOfFrames != numOfFrames) {
 		std::cout << "Failed to read. Required value: " << numOfFrames << ". Number of frames read: " << numberOfFrames << '\n';
 	}
+	std::cout << info->channels <<" "<< info->format <<" "<< info->samplerate  << " " << numberOfFrames << '\n';
 	return ptrToData;
 }
 

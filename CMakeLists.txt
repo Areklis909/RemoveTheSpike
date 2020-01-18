@@ -4,7 +4,7 @@ project(RemoveTheSpike)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(GCC_COVERAGE_COMPILE_FLAGS "-O1 -Wall")
+set(GCC_COVERAGE_COMPILE_FLAGS "-O3 -Wall")
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -24,6 +24,11 @@ find_library(libconfig_location NAMES libconfig++.so)
 message(STATUS ${libconfig_location})
 add_library(config SHARED IMPORTED)
 set_target_properties(config PROPERTIES IMPORTED_LOCATION ${libconfig_location})
+
+find_library(boost_program_options_location NAMES libboost_program_options.so)
+message(STATUS ${boost_program_options_location})
+add_library(boost_program_options SHARED IMPORTED)
+set_target_properties(boost_program_options PROPERTIES IMPORTED_LOCATION ${boost_program_options_location})
 
 add_subdirectory(lib)
 add_subdirectory(test)
