@@ -13,7 +13,6 @@ int main(int argc, char ** argv) {
         DisturbanceElimination disturbanceElimination;
         disturbanceElimination.initializeConfiguration(configName);
         disturbanceElimination.adjustConfiguration(parser);
-        // disturbanceElimination.printConfiguration();
 
         auto samples = disturbanceElimination.getSamplesToProcess();
         disturbanceElimination.processSamples(samples);
