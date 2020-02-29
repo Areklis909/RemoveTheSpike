@@ -9,7 +9,12 @@ int main(int argc, char ** argv) {
         CommandLineParser parser;
         parser.parseCommandLine(argc, argv);
 
-        const std::string configName = "./Configuration.cfg";
+        std::string configName;
+        if(parser.isConfigurationFilePathSet() == true) {
+            configName = parser.getConfigurationFilePath();
+        } else {
+            configName = "bin/Configuration.cfg";
+        }
         DisturbanceElimination disturbanceElimination;
         disturbanceElimination.initializeConfiguration(configName);
         disturbanceElimination.adjustConfiguration(parser);

@@ -19,7 +19,8 @@ CommandLineParser::CommandLineParser() : optionsDescription("Allowed options") {
         (signalLengthStr, po::value<int>(), "signal length")
         (filenameStr, po::value<std::string>(), "File to process")
         (outputFileStr, po::value<std::string>(), "Processed file name")
-        (offsetStr, po::value<int>(), "offset in frames");
+        (offsetStr, po::value<int>(), "offset in frames")
+        (configStr, po::value<std::string>(), "configuration file path");
 }
 
 void CommandLineParser::parseCommandLine(int argc, char ** argv) {
@@ -64,7 +65,6 @@ int CommandLineParser::getSignalLength() {
 
 int CommandLineParser::getOffset() {
     return getOption<int>(offsetStr);
-
 }
 
 std::string CommandLineParser::getFileNameToProcess() {
@@ -76,6 +76,9 @@ std::string CommandLineParser::getOutputFile() {
     return getOption<std::string>(outputFileStr);
 }
 
+std::string CommandLineParser::getConfigurationFilePath() {
+    return getOption<std::string>(configStr);
+}
     
 bool CommandLineParser::isModelOrderSet() {
     return isOptionSet<int>(modelStr);
@@ -115,6 +118,10 @@ bool CommandLineParser::isFileNameToProcessSet() {
     
 bool CommandLineParser::isOutputFileSet() {
     return isOptionSet<std::string>(outputFileStr);
+}
+
+bool CommandLineParser::isConfigurationFilePathSet() {
+    return isOptionSet<std::string>(configStr);
 }
 
 

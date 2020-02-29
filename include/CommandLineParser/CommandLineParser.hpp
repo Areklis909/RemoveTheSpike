@@ -23,6 +23,7 @@ class CommandLineParser {
     const char * filenameStr = "filename";
     const char * outputFileStr = "outputFile";
     const char * offsetStr = "offset";
+    const char * configStr = "config";
 
     template<typename T>
     T getOption(const std::string & optionName) {
@@ -51,6 +52,7 @@ public:
     int getOffset();
     std::string getFileNameToProcess();
     std::string getOutputFile();
+    std::string getConfigurationFilePath();
 
     bool isModelOrderSet();
     bool isRoSet();
@@ -62,6 +64,8 @@ public:
     bool isOffsetSet();
     bool isFileNameToProcessSet();
     bool isOutputFileSet();
+    bool isConfigurationFilePathSet();
+
 };
 
 }
