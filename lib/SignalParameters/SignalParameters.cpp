@@ -28,7 +28,7 @@ SignalParameters::SignalParameters(std::shared_ptr<double[]> data, const int ord
 	previousTeta(r, fill::zeros),
 	previousWariancjaSzumu(0.0),
 	modelStability(r),
-	levinsonDurbin(r, equivalentWindowLength, y)
+	levinsonDurbin(r, equivalentWindowLength, y) 
 {
 	kowBledow *= ro;
 }
@@ -52,32 +52,36 @@ void SignalParameters::computeEwlsAndVariance(const int t) {
 
 	savePreviousParameters();
 	updateFi(t);
-	auto x = (y)[t] - (fi.t()) * (teta);
+	mat x = (y)[t] - (fi.t() * (previousTeta));
 	bledyEstymacji = x.at(0,0);
-	auto num = (kowBledow) * (fi);
-	auto den = lambda + (fi.t() * (kowBledow) * (fi));
-	wektorWzmocnien = num/den.at(0,0);
+	mat num = (kowBledow) * (fi);
+	mat den = lambda + (fi.t() * (kowBledow) * (fi));
+	wektorWzmocnien = num/(den.at(0, 0));
 	mat Ir = eye<mat>(r, r);
 	kowBledow =  (1.0/lambda) * (Ir - (wektorWzmocnien) * (fi.t())) * (kowBledow);
-	teta = teta + ((wektorWzmocnien) * bledyEstymacji);
+	teta = previousTeta + ((wektorWzmocnien) * bledyEstymacji);
 	// levinsonDurbin.updateLevinsonDurbinCoefficients(t);
 	updateWariancjaSzumuRecursive(t);
 }
 
-double SignalParameters::getWariancjaSzumu() {
+double SignalParameters::getWariancjaSzumu() const {
 	return wariancjaSzumu;
 }
 
 void SignalParameters::updateWariancjaSzumuRecursive(const int t) {
-	wariancjaSzumu = wariancjaSzumu * lambdaZero + ((1 - lambdaZero) * pow(bledyEstymacji, 2));
+	wariancjaSzumu = previousWariancjaSzumu * lambdaZero + ((1 - lambdaZero) * pow(bledyEstymacji, 2));
 }
 
-double SignalParameters::getErrorThreshold() {
-	return mi * sqrt(getWariancjaSzumu());
+double SignalParameters::getErrorThreshold() const {
+	return mi * sqrtf(previousWariancjaSzumu);
 }
 
-bool SignalParameters::isAlarm() {
-	return fabs(bledyEstymacji) > getErrorThreshold(); 
+double SignalParameters::getEstimationErrorAbsouluteValue() const {
+	return fabs(bledyEstymacji);
+}
+
+bool SignalParameters::isAlarm() const {
+	return getEstimationErrorAbsouluteValue() > getErrorThreshold(); 
 }
 
 double SignalParameters::getEquivalentWindowLength() const {

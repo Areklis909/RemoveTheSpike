@@ -4,11 +4,11 @@
 #include <armadillo>
 #include <iostream>
 #include <memory>
+#include <cmath>
 #include <sndfile.h>
 #include <LevinsonDurbin/LevinsonDurbin.hpp>
 #include <ModelStability/ModelStability.hpp>
 #include <utils/SwapBuffer.hpp>
-#include <fstream>
 
 
 namespace NsSignalparameters {
@@ -41,11 +41,12 @@ public:
 	~SignalParameters(void);
 	void computeEwlsAndVariance(const int t);
 	arma::vec & getTeta(const int t);
-	double getWariancjaSzumu();
+	double getWariancjaSzumu() const;
 	void updateWariancjaSzumuRecursive(const int t);
-	double getErrorThreshold();
+	double getErrorThreshold() const;
+	double getEstimationErrorAbsouluteValue() const;
 	double getEquivalentWindowLength() const;
-	bool isAlarm();
+	bool isAlarm() const;
 	void loadPreviousParameters();
 };
 

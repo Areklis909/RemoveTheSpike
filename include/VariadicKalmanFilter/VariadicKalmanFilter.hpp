@@ -5,9 +5,8 @@
 #include <armadillo>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 #include <AlarmDescriptor/AlarmDescriptor.hpp>
-//#include "SignalParameters.hpp"
-
 
 namespace NsVariadicKalmanFilter {
 
@@ -34,7 +33,7 @@ class VariadicKalmanFilter
 	arma::mat var;
 
 	VariadicKalmanFilter::VarKalStatus updateStateAndCovarianceMatrices(const int t, const int i, const int q, const int currentIndex);
-	arma::vec createTheta(const int t, const int q);
+	arma::vec createTheta(const int q);
 	void initMatrices(const int t);
 	void aposterioriUpdateDamaged();
 	void aposterioriUpdateNotDamaged(const VariadicKalmanFilter::VarKalStatus & status, const int q, const int currentIndex);

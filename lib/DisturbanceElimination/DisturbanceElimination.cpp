@@ -101,7 +101,7 @@ void DisturbanceElimination::processSamples(NsSignal::Signal<double> & signal) {
     auto counterCallback =  [&relaxAfterAlarm](){
         relaxAfterAlarm = false;
     };
-    const int delayAfterLongAlarmInSamples = 2 * configuration.r;
+    const int delayAfterLongAlarmInSamples = configuration.r;
     auto counter = std::make_unique<Counter<decltype(counterCallback)>>(delayAfterLongAlarmInSamples, counterCallback);
     /*
         Train the AR model for the first r samples - do not accept any alarm
@@ -112,19 +112,17 @@ void DisturbanceElimination::processSamples(NsSignal::Signal<double> & signal) {
     for(int t = configuration.startPointOfProcessing; t < signal.getLength(); ++t) {
         signalParameters.computeEwlsAndVariance(t);
         counter->tick();
-
         if(relaxAfterAlarm == true) continue;
 
         if(signalParameters.isAlarm() == true) {
-            // std::cout << "alarm t: " << t << '\n';
             signalParameters.loadPreviousParameters();
-            VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(t), configuration.mi, signal.getSignal(), signalParameters.getWariancjaSzumu());
-            int alarmLength = kalman.fixDamagedSamples(t);
+            VariadicKalmanFilter kalman(configuration.r, configuration.maxAlarmLength, signalParameters.getTeta(t),
+                configuration.mi, signal.getSignal(), signalParameters.getWariancjaSzumu());
+            const int alarmLength = kalman.fixDamagedSamples(t);
             if(alarmLength >= configuration.maxAlarmLength) {
                 relaxAfterAlarm = true;
                 counter->enable();
             }
-            t += alarmLength - 1;
         }
     }
 }
