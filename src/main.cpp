@@ -13,7 +13,7 @@ int main(int argc, char ** argv) {
         if(parser.isConfigurationFilePathSet() == true) {
             configName = parser.getConfigurationFilePath();
         } else {
-            configName = "bin/Configuration.cfg";
+            configName = "Configuration.cfg";
         }
         DisturbanceElimination disturbanceElimination;
         disturbanceElimination.initializeConfiguration(configName);
