@@ -1,12 +1,13 @@
 FROM php:7.4-apache
 
-USER root
-
 WORKDIR ~/
 
-RUN apt-get -y update && apt-get -y install wget gfortran cmake python2 python-pip unzip libgfortran4 libarpack2 libarpack2-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update && apt-get -y install wget gfortran cmake \
+    python3 python3-pip sox \ 
+    unzip libsndfile-dev libgfortran4 libarpack2 libarpack2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install matplotlib
+RUN pip3 install matplotlib backports.tempfile audiofile 
 
 ENV ARMADILLO_DIR armadillo-9.850.1
 
@@ -74,7 +75,7 @@ ENV BIN_DIR RemoveTheSpike_bin
 
 RUN mkdir $APP
 
-ARG CACHE_DATE=2016-01-01
+#ARG CACHE_DATE=2016-01-01
 
 COPY  . $APP 
 
@@ -84,4 +85,7 @@ RUN mkdir $BUILD_DIR && cd $BUILD_DIR \
 	&& cp $BUILD_DIR/src/removeTheSpike $BUILD_DIR/src/Configuration.cfg $BIN_DIR \
 	&& rm -r $BUILD_DIR
 
-RUN sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 10M/g' /usr/local/etc/php/php.ini-production
+ENV SERVER_DIR /var/www/html
+
+RUN sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 10M/g' /usr/local/etc/php/php.ini-production \
+	&& chown -R www-data:www-data $SERVER_DIR 
