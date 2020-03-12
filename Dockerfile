@@ -3,7 +3,7 @@ FROM php:7.4-apache
 WORKDIR ~/
 
 RUN apt-get -y update && apt-get -y install wget gfortran cmake \
-    python3 python3-pip sox \ 
+    python3 python3-pip sox cron \ 
     unzip libsndfile-dev libgfortran4 libarpack2 libarpack2-dev \
     && rm -rf /var/lib/apt/lists/*
 
