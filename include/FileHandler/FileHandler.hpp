@@ -27,7 +27,6 @@ private:
 	int64_t numberOfFrames;
 
 	double * readSamples(const int64_t numOfSamples);
-	void createFileToWrite(const std::string & filename);
 	SNDFILE * openSoundFileToRead();
 	SNDFILE * openFileToWriteAndReuseInfo(const std::string & filename);
 public:

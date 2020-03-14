@@ -25,6 +25,9 @@ SNDFILE * FileHandler::openFileToWriteAndReuseInfo(const std::string & filename)
 	tmpInfo->samplerate = info->samplerate;
 	tmpInfo->channels = info->channels;
 	tmpInfo->format = info->format;
+	tmpInfo->sections = info->sections;
+	tmpInfo->seekable = info->seekable;
+	tmpInfo->frames = info->frames;
 	auto file = sf_open(filename.c_str(), SFM_WRITE, tmpInfo);
 	if(file == nullptr) {
 		throw std::runtime_error("Failed to open sound file to write!");
@@ -62,22 +65,14 @@ double * FileHandler::readSamples(const int64_t numOfSamples) {
 	return ptrToData;
 }
 
-void FileHandler::createFileToWrite(const std::string & filename) {
-	std::fstream f;
-	f.open(filename, std::ios::out);
-	f.close();
-}
-
 void FileHandler::writeSamples(Signal<double> & signal, const std::string & filename) {
-	createFileToWrite(filename);
 	SNDFILE * fileOut = openFileToWriteAndReuseInfo(filename);
-	ObjectGuard guard([fileOut](){delete fileOut;});
 	auto count = sf_writef_double(fileOut, signal.getSignal().get(), signal.getLength());
 	if(count != signal.getLength()) {
 		std::cout <<"Number of Frames error" << std::endl;
 	}
-
-	sf_write_sync(file);
+	sf_write_sync(fileOut);
+	sf_close(fileOut);
 }
 
 int FileHandler::getNumberOfFrames() {
