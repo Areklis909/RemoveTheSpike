@@ -10,20 +10,24 @@ class Signal {
 
     std::shared_ptr<T[]> signal;
     int64_t length;
+    int32_t channels;
 
 public:
 
-    Signal(T * ptr, size_t l) {
+    Signal(T * ptr, const size_t l, const int64_t ch) : length(l), channels(ch) {
         signal = std::shared_ptr<T[]>(ptr, [](T * p){ delete [] p; });
-        length = l;
     }
 
     std::shared_ptr<T[]> getSignal() {
         return signal;
     }
 
-    int64_t getLength() {
+    int64_t getLength() const {
         return length;
+    }
+
+    int32_t getNumberOfChannels() const {
+        return channels;
     }
 
 };

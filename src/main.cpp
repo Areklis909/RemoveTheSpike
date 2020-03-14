@@ -23,6 +23,6 @@ int main(int argc, char ** argv) {
         disturbanceElimination.processSamples(samples);
         disturbanceElimination.saveSamples(samples);
     } catch(std::exception & e) {
-        std::cout << e.what();
+        std::cout << e.what() << '\n';
     }
 }

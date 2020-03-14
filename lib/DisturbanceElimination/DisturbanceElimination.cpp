@@ -109,7 +109,8 @@ void DisturbanceElimination::processSamples(NsSignal::Signal<double> & signal) {
     relaxAfterAlarm = true;
     counter->enable();
     
-    for(int t = configuration.startPointOfProcessing; t < signal.getLength(); ++t) {
+    const int64_t limit = signal.getLength() * signal.getNumberOfChannels();
+    for(int t = configuration.startPointOfProcessing; t < limit ; ++t) {
         signalParameters.computeEwlsAndVariance(t);
         counter->tick();
         if(relaxAfterAlarm == true) continue;

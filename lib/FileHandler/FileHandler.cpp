@@ -48,15 +48,15 @@ Signal<double> FileHandler::getSignalHandler(int64_t numOfSamples) {
 		numOfSamples = info->frames;
 	}
 	auto samples = readSamples(numOfSamples);
-	Signal<double> signal(samples, getNumberOfFrames());
+	Signal<double> signal(samples, getNumberOfFrames(), info->channels);
 	return signal;
 }
 
-double * FileHandler::readSamples(const int64_t numOfFrames) {
-	ptrToData = new double[info->channels * numOfFrames];
-	numberOfFrames = sf_readf_double(file, ptrToData, numOfFrames);
-	if(numberOfFrames != numOfFrames) {
-		std::cout << "Failed to read. Required value: " << numOfFrames << ". Number of frames read: " << numberOfFrames << '\n';
+double * FileHandler::readSamples(const int64_t numOfSamples) {
+	ptrToData = new double[info->channels * numOfSamples];
+	numberOfFrames = sf_readf_double(file, ptrToData, numOfSamples);
+	if(numberOfFrames != numOfSamples) {
+		std::cout << "Failed to read. Required value: " << numOfSamples << ". Number of frames read: " << numberOfFrames << '\n';
 	}
 	std::cout << info->channels <<" "<< info->format <<" "<< info->samplerate  << " " << numberOfFrames << '\n';
 	return ptrToData;
@@ -69,7 +69,6 @@ void FileHandler::createFileToWrite(const std::string & filename) {
 }
 
 void FileHandler::writeSamples(Signal<double> & signal, const std::string & filename) {
-
 	createFileToWrite(filename);
 	SNDFILE * fileOut = openFileToWriteAndReuseInfo(filename);
 	ObjectGuard guard([fileOut](){delete fileOut;});
